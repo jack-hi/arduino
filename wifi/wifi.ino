@@ -31,5 +31,5 @@ void setup() {
 
 void loop() {
   //wifi.send(SERVER, "ESP8266 TEST");
-  //delay(3000);
+
 }

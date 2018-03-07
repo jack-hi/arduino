@@ -22,10 +22,8 @@ void setup() {
   wifi.begin();
 
   wifi.connectToAP("TP-LINK_C2B3", "yy@212310429");
-  //wifi.connectToServer("192.168.2.105", "10001");
   wifi.setTransportToUDP();
   wifi.connectToServer("202.112.31.197", "123"); //NTP server
-
   
 }
 

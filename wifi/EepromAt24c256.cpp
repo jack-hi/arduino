@@ -1,7 +1,6 @@
 #include "EepromAt24c256.h"
-#include <Wire.h>
 
-EepromAt24c356::EepromAt24c256(TwoWire *i2c_bus, uint8_t device_address) {
+EepromAt24c256::EepromAt24c256(TwoWire *i2c_bus, uint8_t device_address) {
   i2c = i2c_bus;
   dev_addr = device_address;  
 }

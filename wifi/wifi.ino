@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include <SerialESP8266wifi.h>
 #include <Wire.h>
-#include "EepromAt24c256.h"
+#include "EEPROMAT24C256.h"
 
 
 #define esp_uart_rx 2
@@ -34,7 +34,7 @@ void setup() {
   /* AT24C256 EEPROM, Size: 256KB, Device address 0x50(0xA0>>1) */
   Wire.begin();
   
-  EepromAt24c256 er(&Wire, 0x50);
+  EEPROMAT24C256 er(&Wire, 0x50);
   er.write_byte(0x0011, 0x11);  
   
   Serial.print(er.read_byte(0x0011), HEX);

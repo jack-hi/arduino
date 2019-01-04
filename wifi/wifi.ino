@@ -3,6 +3,66 @@
 #include <Wire.h>
 //#include "EEPROMAT24C256.h"
 
+/*
+ * Thermistor： Get Temperature from NTC thermistor
+ * Reference: https://learn.adafruit.com/thermistor/using-a-thermistor
+ * Connection: 
+ *                  3.3V --------- AREF 
+ *                    |
+ *              SERIALRESISTOR(10K)
+ *                    |
+ *                    |-------- A0
+ *                    |
+ *                THERMISTOR
+ *                    |
+ *                   GND
+ */
+class Thermistor {
+private:
+  int pin; 
+  
+  static const int THERMISTORNOMINAL = 10000; // 10K
+  static const int TEMPERATURENOMINAL = 25; // 25C
+  static const int NUMSAMPLES = 5; 
+  static const int BCOEFFICIENT = 3950;
+  static const int SERIALRESISTOR = 10000; // 10K 
+
+public:
+  Thermistor(int pin) {
+    this->pin = pin;  
+    // connect AREF to 3.3V and use that as VCC, less noisy!
+    analogReference(EXTERNAL);
+  }  
+
+  float getTemperature() {
+    uint8_t i;
+    float average = 0, temp = 0;
+    int samples[NUMSAMPLES];
+
+    for (i = 0; i < NUMSAMPLES; i ++ ) {
+      samples[i] = analogRead(pin);
+      delay(10);   
+    }
+    for (i = 0; i < NUMSAMPLES; i ++) {
+      average += samples[i];  
+    }
+    average /= NUMSAMPLES;
+
+    // convert the value to resistance
+    average = 1023 / average - 1;
+    average = SERIALRESISTOR / average;
+
+    // convert to temperature
+    temp = average / THERMISTORNOMINAL;
+    temp = log(temp);
+    temp /= BCOEFFICIENT;
+    temp += 1.0 / (TEMPERATURENOMINAL + 273.15);
+    temp = 1.0 / temp;
+    temp -= 273.15;
+    
+    return temp;
+  }
+};
 
 #define esp_uart_rx 2
 #define esp_uart_tx 3
@@ -14,7 +74,7 @@ SoftwareSerial espSerial(esp_uart_rx, esp_uart_tx); //Rx Tx
 //SerialESP8266wifi wifi(espSerial, espSerial, esp_rst_pin, Serial);
 SerialESP8266wifi wifi(espSerial, espSerial, esp_rst_pin);
 
-
+Thermistor thermistor(A0);
 int ret = -1;
 
 void setup() {
@@ -53,16 +113,23 @@ void setup() {
 }
 
 void loop() {
-  String time = String(millis(), DEC);
-  wifi.send(SERVER, time.c_str());
+  
+  float temp = thermistor.getTemperature();
+  delay(3000);
+  
+  String ts = String(millis(), DEC) + ": " + "Thermistor: " +String(temp, 2) + "'C";
+  wifi.send(SERVER, ts.c_str());
 
-  delay(20);
+  delay(50); // delay > ~15ms
  
   //WifiMessage in = wifi.listenForIncomingMessage(5000); //timeout 5s
   WifiMessage in = wifi.getIncomingMessage();
   if (in.hasData) {
-    Serial.println(in.channel);
+    //Serial.println(in.channel);
     Serial.println(in.message);  
   }
+
+
+
 
 }

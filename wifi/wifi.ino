@@ -2,6 +2,7 @@
 #include <SerialESP8266wifi.h>
 #include <Wire.h>
 //#include "EEPROMAT24C256.h"
+#include "NTCThermistor.h"
 
 /*
  * Thermistor： Get Temperature from NTC thermistor
@@ -17,6 +18,7 @@
  *                    |
  *                   GND
  */
+#if 0
 class Thermistor {
 private:
   int pin; 
@@ -63,6 +65,8 @@ public:
     return temp;
   }
 };
+#endif
+
 
 #define esp_uart_rx 2
 #define esp_uart_tx 3
@@ -74,7 +78,8 @@ SoftwareSerial espSerial(esp_uart_rx, esp_uart_tx); //Rx Tx
 //SerialESP8266wifi wifi(espSerial, espSerial, esp_rst_pin, Serial);
 SerialESP8266wifi wifi(espSerial, espSerial, esp_rst_pin);
 
-Thermistor thermistor(A0);
+NTCThermistor thermistor(A0);
+
 int ret = -1;
 
 void setup() {

@@ -24,11 +24,12 @@
 #define SERIALRESISTOR 10000 //10K 
 
 class NTCThermistor {
-private:
-  int pin; 
-
 public:
-  NTCThermistor(int pin);
+  NTCThermistor(int pin, int numsamples = NUMSAMPLES);
   float getTemperature();
+private:
+  int pin;
+  int numsamples;
+  
 };
 #endif // NTCThermistor_h

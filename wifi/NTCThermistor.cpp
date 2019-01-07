@@ -6,9 +6,10 @@
 #include "NTCThermistor.h"
 #include <Arduino.h>
 
-NTCThermistor::NTCThermistor(int pin)
+NTCThermistor::NTCThermistor(int pin, int numsamples)
 {
   this->pin = pin;  
+  this->numsamples = numsamples;
 }
 
 float NTCThermistor::getTemperature()
@@ -17,14 +18,14 @@ float NTCThermistor::getTemperature()
   float average = 0, temp = 0;
   int samples[NUMSAMPLES];
 
-  for (i = 0; i < NUMSAMPLES; i ++ ) {
+  for (i = 0; i < numsamples; i ++ ) {
     samples[i] = analogRead(pin);
     delay(10);   
   }
-  for (i = 0; i < NUMSAMPLES; i ++) {
+  for (i = 0; i < numsamples; i ++) {
     average += samples[i];  
   }
-  average /= NUMSAMPLES;
+  average /= numsamples;
 
   // convert the value to resistance
   average = 1023 / average - 1;

@@ -16,8 +16,6 @@ def cli_fun(conn):
             try: 
                 data = conn.recv(100)
             except socket.timeout:
-                conn.close()
-                conn = None
                 break
 
             if not data: break
